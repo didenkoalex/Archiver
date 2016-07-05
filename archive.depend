@@ -11,3 +11,19 @@
 1467681823 d:\users\didenko.as\desktop\archive\stream.h
 	<stdio.h>
 
+1467713521 source:c:\users\Александр\desktop\Практика\main.c
+	<stdlib.h>
+	<stdio.h>
+
+1467655282 c:\users\Александр\desktop\Практика\compress.h
+	"stream.h"
+
+1467698810 c:\users\Александр\desktop\Практика\stream.h
+	<stdio.h>
+
+1467698477 c:\users\Александр\desktop\Практика\archiver.h
+	"compress.h"
+	"stream.h"
+	<stdio.h>
+	<time.h>
+

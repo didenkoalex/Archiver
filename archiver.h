@@ -29,8 +29,14 @@ typedef struct t_arch_hand t_arch_hand;
 typedef struct t_arch_item t_arch_item;
 
 //—оздает новый архив с заданными атрибутами [с указанием размера блока данных]:
-t_arch_hand *new_arch(const char *arch_name, size_t block_size);
-
+t_arch_hand * new_arch (const char *arch_name, size_t block_size);/* {
+    t_arch_hand * descr = (t_arch_hand *)malloc(sizeof(t_arch_hand));
+    descr->arch = fopen(arch_name, "r+b");
+    t_arch_head head = read_arch_head(block_size, 0, 0, sizeof(t_arch_head)+1);
+    print_arch_head(descr->arch, &head);
+    return descr;
+}
+*/
 //ќткрывает существующий архив:
 t_arch_hand *get_arch(const char *arch_name, int read_only);
 
@@ -68,7 +74,8 @@ int off_arch_item(t_arch_item *item);
 t_arch_item *add_arch_item(t_arch_item *item, const char *name, t_arch_type type);
 
 //—оздает новый подкаталог:
-t_arch_item *new_arch_item(t_arch_item *item, const char *name);
+t_arch_item *new_arch_item(t_arch_item *item, const char *name) {
+}
 
 //¬озвращает поток данных, св€занный с текущим файлом (дл€ каталогов возвращает NULL):
 //t_stream *get_arch_item_stream(t_arch_item *item);
