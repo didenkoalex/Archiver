@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1467689932 source:d:\users\didenko.as\desktop\archive\main.c
+	<stdio.h>
+	<stdlib.h>
+	"compress.h"
+	"stream.h"
+
+1467681828 d:\users\didenko.as\desktop\archive\compress.h
+	"stream.h"
+
+1467681823 d:\users\didenko.as\desktop\archive\stream.h
+	<stdio.h>
+
