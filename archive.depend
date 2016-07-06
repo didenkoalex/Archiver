@@ -1,14 +1,17 @@
 # depslib dependency file v1.0
-1467689932 source:d:\users\didenko.as\desktop\archive\main.c
+1467771570 source:d:\users\didenko.as\desktop\archive\main.c
 	<stdio.h>
 	<stdlib.h>
+	"archiver.h"
 	"compress.h"
 	"stream.h"
+	"r_stream.h"
 
-1467681828 d:\users\didenko.as\desktop\archive\compress.h
+1467757127 d:\users\didenko.as\desktop\archive\compress.h
 	"stream.h"
 
-1467681823 d:\users\didenko.as\desktop\archive\stream.h
+1467771429 d:\users\didenko.as\desktop\archive\stream.h
+	<stdlib.h>
 	<stdio.h>
 
 1467713521 source:c:\users\Александр\desktop\Практика\main.c
@@ -26,4 +29,15 @@
 	"stream.h"
 	<stdio.h>
 	<time.h>
+
+1467762541 d:\users\didenko.as\desktop\archive\archiver.h
+	"compress.h"
+	"stream.h"
+	<stdio.h>
+	<time.h>
+
+1467771545 d:\users\didenko.as\desktop\archive\r_stream.h
+	<stdlib.h>
+	<stdio.h>
+	"stream.h"
 

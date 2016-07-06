@@ -1,66 +1,92 @@
 #ifndef __INCLUDE_DATASTREAM_H
 #define __INCLUDE_DATASTREAM_H
+#include <stdlib.h>
 #include <stdio.h>
 typedef unsigned char BYTE;
 
+//Структура таблицы виртуальных функций:
+typedef struct t_vtable {
+	size_t (*swrite) (const void *buff, size_t size, size_t count, void *stream);
+	size_t (*sread)  (void *buff, size_t size, size_t count, void *stream);
+	int    (*sputc)  (int ch, void *stream);
+	int    (*sgetc)  (void *stream);
+	int    (*sseek)  (void *stream, long offset, int origin);
+	long   (*stell)  (void *stream);
+	int    (*seof)   (void *stream);
+	int    (*serror) (void *stream);
+	int    (*sclose) (void *stream);
+	//...
+} t_vtable;
+
+
+
+//Структура виртуального потока:
 typedef struct t_stream {
-    long pos, len, end;
-    FILE *fid;
+	const t_vtable *vtbl;
+	void *data;
 } t_stream;
 
-//открывет входной поток
-t_stream * sopen(const char *name, const char * stat) {
-    t_stream *st = (t_stream *)malloc(sizeof(t_stream));
-    st->fid = fopen(name, stat);
-    return st;
+#ifdef __GNUC__
+#define PREFIX static inline
+#else
+#define PREFIX
+#endif
+
+//Создает виртуальный поток:
+PREFIX t_stream *new_stream(void *data, const t_vtable *vtbl) {
+	t_stream *stream = (t_stream *) malloc(sizeof(t_stream));
+	if (stream == NULL) return NULL;
+	stream->data = data;
+	stream->vtbl = vtbl;
+	return stream;
 }
 
 //Выводит данные из буфера в поток:
-size_t swrite(const void *buff, size_t size, size_t count, t_stream *stream) {
-    return fwrite(buff, size, count, stream->fid);
+PREFIX size_t put_stream_buff(const void *buff, size_t size, size_t count, t_stream *stream) {
+	return stream->vtbl->swrite(buff, size, count, stream->data);
 }
 
 //Читает данные из потока в буфер:
-size_t sread(void *buff, size_t size, size_t count, t_stream *stream) {
-    return sread(buff, size, count, stream->fid);
+PREFIX size_t get_stream_buff(void *buff, size_t size, size_t count, t_stream *stream) {
+	return stream->vtbl->sread(buff, size, count, stream->data);
 }
 
 //Выводит символ в поток:
-int sputc(BYTE ch, t_stream *stream) {
-    fputc(ch, stream->fid);
+PREFIX int put_stream_char(int ch, t_stream *stream) {
+	return stream->vtbl->sputc(ch, stream->data);
 }
 
 //Читает символ из потока:
-int sgetc(t_stream *stream) {
-    //if(src->pos==src->end) return EOF;
-    //src->pos++;
-    return fgetc(stream->fid);
-}
-
-//Сбрасывает буфер потока (если такая операция предусмотрена):
-int sflush(t_stream *stream) {
-    return fflush(stream->fid);
+PREFIX int get_stream_char(t_stream *stream) {
+	return stream->vtbl->sgetc(stream->data);
 }
 
 //Смещает текущую позицию в потоке:
-int sseek(t_stream *stream, long offset, int origin) {
-    return fseek(stream->fid, offset, origin);
+PREFIX int run_stream_seek(t_stream *stream, long offset, int origin) {
+	return stream->vtbl->sseek(stream->data, offset, origin);
 }
 
-
 //Возвращает текущую позицию в потоке:
-long stell(t_stream *stream) {
-    return ftell(stream->fid);
+PREFIX long get_stream_tell(t_stream *stream) {
+	return stream->vtbl->stell(stream->data);
 }
 
 //Проверяет окончание потока:
-int seof(t_stream *stream) {
-    return feof(stream->fid);
+PREFIX int get_stream_eof(t_stream *stream) {
+	return stream->vtbl->seof(stream->data);
 }
 
-//Проверяет наличие ошибки при выполнении последней операции с потоком:
-int serror(t_stream *stream) {
-    return ferror(stream->fid);
+//Проверяет наличие ошибки:
+PREFIX int get_stream_error(t_stream *stream) {
+	return stream->vtbl->serror(stream->data);
+}
+
+//Закрывает поток:
+PREFIX int off_stream(t_stream *stream) {
+	if ((stream == NULL) || (stream->data == NULL)) return 0;
+	stream->vtbl->sclose(stream->data);
+	free(stream);
+	return 0;
 }
 
 #endif //__INCLUDE_DATASTREAM_H

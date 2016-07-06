@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <time.h>
 
-//Типы элементов в архиве: {каталог, несжатый файл, сжатый файл [алгоритмом RLE], сжатый файл [алгоритмом Хаффмана], сжатый файл [алгоритмом LZW]}
+//Тип содержимого элементов архива: {каталог, несжатый файл, сжатый файл [алгоритмом RLE], сжатый файл [алгоритмом Хаффмана], сжатый файл [алгоритмом LZW]}
 typedef enum { IS_FLD, IS_DAT, IS_RLE, IS_HUF, IS_LZW } t_arch_type;
 
 #define MIN_LEN_OF_DATA_SIZE (sizeof(t_arch_attr) + 2 * sizeof(long))
@@ -17,7 +17,7 @@ typedef struct {
 	char name[MAX_LEN_OF_ITEM_NAME + 1];	//Символьное имя файла (представлено в виде нуль-терминированной строки);
 	size_t size_outer;	//Для каталогов -- число ссылок; для файлов -- истинный размер файла [без сжатия];
 	size_t size_inter;	//Для каталогов -- число ссылок; для файлов -- размер сжатого файла;
-	t_arch_type type;	//Тип текущего элемента;
+	t_arch_type type;	//Тип содержимого;
 	time_t time;	//Время создания;
 	//...
 } t_arch_attr;
@@ -29,16 +29,10 @@ typedef struct t_arch_hand t_arch_hand;
 typedef struct t_arch_item t_arch_item;
 
 //Создает новый архив с заданными атрибутами [с указанием размера блока данных]:
-t_arch_hand * new_arch (const char *arch_name, size_t block_size);/* {
-    t_arch_hand * descr = (t_arch_hand *)malloc(sizeof(t_arch_hand));
-    descr->arch = fopen(arch_name, "r+b");
-    t_arch_head head = read_arch_head(block_size, 0, 0, sizeof(t_arch_head)+1);
-    print_arch_head(descr->arch, &head);
-    return descr;
-}
-*/
+t_arch_hand *new_arch(const char *file_name, size_t block_size);
+
 //Открывает существующий архив:
-t_arch_hand *get_arch(const char *arch_name, int read_only);
+t_arch_hand *get_arch(const char *file_name, int read_only);
 
 //Возвращает суммарный размер всех файлов в архиве (без учета сжатия):
 size_t get_arch_size(t_arch_hand *arch);
@@ -71,11 +65,10 @@ int del_arch_item(t_arch_item *item);
 int off_arch_item(t_arch_item *item);
 
 //Выполняет вставку нового файла в текущий каталог архива (указывается тип сжатия):
-t_arch_item *add_arch_item(t_arch_item *item, const char *name, t_arch_type type);
+t_arch_item *add_arch_item(t_arch_item *item, const char *file_name, t_arch_type type);
 
 //Создает новый подкаталог:
-t_arch_item *new_arch_item(t_arch_item *item, const char *name) {
-}
+t_arch_item *new_arch_item(t_arch_item *item, const char *item_name);
 
 //Возвращает поток данных, связанный с текущим файлом (для каталогов возвращает NULL):
 //t_stream *get_arch_item_stream(t_arch_item *item);
